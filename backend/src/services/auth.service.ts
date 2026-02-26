@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken'
 import { UserRepository } from '../repositories/user.repository'
 import { RefreshTokenRepository } from '../repositories/refresh-token.repository'
 import { comparePassword, hashPassword } from '../utils/bcrypt';
@@ -57,5 +57,24 @@ export class AuthService {
     await this.tokenRepo.createRefreshToken(userId, refreshToken, expiresAt);
 
     return { accessToken, refreshToken };
+  }
+
+  async refresh(token: string) {
+    try {
+      const decoded: JwtPayload
+        = jwt.verify(token, process.env.JWT_REFRESH_SECRET as string) as JwtPayload;
+
+      const storedToken = await this.tokenRepo.findByToken(token);
+
+      if (!storedToken) throw new Error('Refresh token not found');
+      if (storedToken.is_revoked) throw new Error('Refresh token is revoked');
+      if (storedToken.expires_at < new Date()) throw new Error("Refresh token is expired");
+
+      await this.tokenRepo.revokeToken(token);
+
+      return this.generateTokens(decoded.data);
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
   }
 }

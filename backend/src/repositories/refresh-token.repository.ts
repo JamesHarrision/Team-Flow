@@ -23,4 +23,10 @@ export class RefreshTokenRepository {
       }
     });
   }
+
+  async findByToken(token: string): Promise<RefreshToken | null> {
+    return await prisma.refreshToken.findUnique({
+      where: {token}
+    })
+  }
 }
