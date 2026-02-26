@@ -37,16 +37,22 @@ export class AuthService {
   }
 
   async generateTokens(userId: string) {
+    const user = await this.userRepo.findById(userId);
+    if(!user) return;
+    
     // Ký Access Token (sống 15 phút)
     const accessToken = jwt.sign(
-      { data: userId },
+      {
+        userId: userId,
+        role: user.role
+      },
       process.env.JWT_SECRET as string,
       { expiresIn: '15m' }
     )
 
     // Ký Refresh Token (sống 7 ngày)
     const refreshToken = jwt.sign(
-      { data: userId },
+      { userId },
       process.env.JWT_REFRESH_SECRET as string,
       { expiresIn: "7d" }
     )
@@ -72,7 +78,7 @@ export class AuthService {
 
       await this.tokenRepo.revokeToken(token);
 
-      return this.generateTokens(decoded.data);
+      return this.generateTokens(decoded.userId);
     } catch (error: any) {
       throw new Error(error.message);
     }

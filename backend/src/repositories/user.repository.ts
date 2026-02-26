@@ -12,4 +12,12 @@ export class UserRepository {
       }
     })
   }
+  async findById(id: string): Promise<User | null> {
+    return await prisma.user.findUnique({
+      where: {
+        id
+      }
+    })
+  }
+  
 }
