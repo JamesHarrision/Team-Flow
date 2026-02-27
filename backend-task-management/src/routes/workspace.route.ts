@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { WorkspaceController } from "../controllers/workspace.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
+import { requireUser } from "../middlewares/auth.middleware";
 
 const router = Router();
 const workspaceController = new WorkspaceController();
 
-router.post("/", verifyToken ,workspaceController.createWorkSpace)
+router.post("/", requireUser ,workspaceController.createWorkSpace)
+router.get("/", requireUser , workspaceController.getWorkspaces)
+router.get("/:id", requireUser, workspaceController.getWorkspaceById)
 
 
 export default router;
