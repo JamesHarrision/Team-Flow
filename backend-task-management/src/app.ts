@@ -3,9 +3,6 @@ import cors from 'cors'
 import helmet from 'helmet'
 import { prisma } from './config/prisma';
 
-// Routes
-import authRoutes from '../src/routes/auth.routes'
-
 const app = express();
 
 //Middlewares
@@ -27,7 +24,5 @@ app.get('/', async (req, res) => {
     })
   }
 })
-
-app.use('/auth', authRoutes);
 
 export default app;
