@@ -7,38 +7,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  PM
+// Service: Task Management Service
+enum ProjectRole {
+  OWNER
   MEMBER
+  VIEWER
 }
 
-model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  password_hash String
-  role          Role     @default(MEMBER)
-  display_name  String?
-  avatar_url    String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+model Workspace {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  ownerId     String    // Liên kết logic với User ID từ Identity Service
+  projects    Project[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  //Bai Tap
-  refreshTokens RefreshToken[]
-
-  @@map("users")
+  @@map("workspaces")
 }
 
-model RefreshToken {
-  id         String   @id @default(uuid())
-  token      String   @db.Text
-  expires_at DateTime
-  is_revoked Boolean  @default(false)
+model Project {
+  id          String    @id @default(uuid())
+  name        String
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sections    Section[]
+  members     ProjectMember[]
+  createdAt   DateTime  @default(now())
 
-  //Bai Tap
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
+  @@map("projects")
+}
 
-  @@unique([token(length: 256)])
-  @@map("refreshTokens")
+model ProjectMember {
+  id        String      @id @default(uuid())
+  projectId String
+  userId    String      // ID từ Identity Service
+  role      ProjectRole @default(MEMBER)
+  project   Project     @relation(fields: [projectId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Section {
+  id        String   @id @default(uuid())
+  name      String   // Ví dụ: "To Do", "In Progress", "Done"
+  order     Int      // Thứ tự hiển thị
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+
+  @@map("sections")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  priority    Int      @default(0) // 0: Low, 1: Medium, 2: High
+  dueDate     DateTime?
+  sectionId   String
+  section     Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  
+  // Many-to-Many: Một task có thể có nhiều người thực hiện (Assignees)
+  assignees   TaskAssignee[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tasks")
+}
+
+model TaskAssignee {
+  id     String @id @default(uuid())
+  taskId String
+  userId String // ID từ Identity Service
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@map("task_assignees")
 }

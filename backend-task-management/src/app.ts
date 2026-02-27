@@ -14,7 +14,7 @@ app.use(express.json());
 app.get('/', async (req, res) => {
   try {
     return res.status(200).json({
-      message: "Welcome to Team Flow",
+      message: "Welcome to Team Flow - Task management Service",
       database: "Connect to DB successfully"
     });
   } catch (e) {
