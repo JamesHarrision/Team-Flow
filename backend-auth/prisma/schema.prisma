@@ -31,7 +31,7 @@ model User {
 
 model RefreshToken {
   id         String   @id @default(uuid())
-  token      String   @unique
+  token      String   @db.Text
   expires_at DateTime
   is_revoked Boolean  @default(false)
 
@@ -39,5 +39,6 @@ model RefreshToken {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 
+  @@unique([token(length: 256)])
   @@map("refreshTokens")
 }

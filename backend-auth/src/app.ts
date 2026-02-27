@@ -4,7 +4,7 @@ import helmet from 'helmet'
 import { prisma } from './config/prisma';
 
 // Routes
-import * as authRoutes from '../src/routes/auth.routes'
+import authRoutes from '../src/routes/auth.routes'
 
 const app = express();
 
@@ -28,6 +28,6 @@ app.get('/', async (req, res) => {
   }
 })
 
-app.use('/auth', authRoutes.default);
+app.use('/auth', authRoutes);
 
 export default app;
