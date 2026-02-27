@@ -1,7 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import { prisma } from './config/prisma';
+
+import workspaceRoutes from './routes/workspace.route';
 
 const app = express();
 
@@ -24,5 +25,7 @@ app.get('/', async (req, res) => {
     })
   }
 })
+
+app.use("/api/v1/workspaces", workspaceRoutes);
 
 export default app;
