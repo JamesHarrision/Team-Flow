@@ -56,4 +56,21 @@ export class WorkspaceRepo {
     })
   }
 
+  public updateWorkspaceById = async (
+    id: string,
+    data: Prisma.WorkspaceUpdateInput
+  ) => {
+    return await prisma.workspace.update({
+      where: {
+        id: id
+      },
+      data
+    })
+  }
+
+  public deleteWorkspaceById = async (id: string) => {
+    return prisma.workspace.delete({
+      where: { id }
+    })
+  }
 }

@@ -5,9 +5,11 @@ import { requireUser } from "../middlewares/auth.middleware";
 const router = Router();
 const workspaceController = new WorkspaceController();
 
-router.post("/", requireUser ,workspaceController.createWorkSpace)
-router.get("/", requireUser , workspaceController.getWorkspaces)
+router.post("/", requireUser, workspaceController.createWorkSpace)
+router.get("/", requireUser, workspaceController.getWorkspaces)
 router.get("/:id", requireUser, workspaceController.getWorkspaceById)
+router.put("/:id", requireUser, workspaceController.updateWorkspaceById)
+router.delete("/:id", requireUser, workspaceController.deleteWorkspaceById)
 
 
 export default router;
