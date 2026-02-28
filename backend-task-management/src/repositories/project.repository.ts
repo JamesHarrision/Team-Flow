@@ -12,7 +12,7 @@ export class ProjectRepo {
         workspaceId: workspaceId,
         OR: [
           { workspace: { ownerId: userId } },
-          { members: { some: { id: userId } } }
+          { members: { some: { userId: userId } } }
         ]
       },
       include: {

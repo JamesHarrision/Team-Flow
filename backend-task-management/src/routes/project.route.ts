@@ -2,7 +2,7 @@ import { Router } from "express";
 import { ProjectController } from "../controllers/project.controller";
 import { requireUser } from "../middlewares/auth.middleware";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 const projectController = new ProjectController();
 

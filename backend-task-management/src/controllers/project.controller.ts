@@ -14,9 +14,16 @@ export class ProjectController {
       const { workspaceId } = req.params;
       const userId = req.user!.userId;
 
-      if (!workspaceId) {
+      if (!workspaceId || workspaceId == undefined) {
         return res.status(400).json({
           message: "Workspace ID is required"
+        })
+      }
+
+      const workspace = await this.workspaceRepo.getWorkspaceById(workspaceId as string);
+      if (!workspace) {
+        return res.status(404).json({
+          message: "Workspace not found or wrong workspace id"
         })
       }
 
