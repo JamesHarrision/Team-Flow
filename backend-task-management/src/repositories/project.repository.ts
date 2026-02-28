@@ -1,3 +1,4 @@
+import { Prisma, ProjectRole } from '@prisma/client';
 import { prisma } from '../config/prisma'
 
 export class ProjectRepo {
@@ -29,6 +30,36 @@ export class ProjectRepo {
       },
       orderBy: { createdAt: "desc" }
     })
+  }
+
+  public createNewProject = async (
+    workspaceId: string,
+    userId: string,
+    name: string,
+  ) => {
+    return await prisma.$transaction(async (tx) => {
+      // Bước 1: Tạo Project
+      const project = await tx.project.create({
+        data: {
+          name: name,
+          workspaceId: workspaceId
+        }
+      });
+
+      // Bước 2: Tạo Member (role OWNER)
+      await tx.projectMember.create({
+        data: {
+          projectId: project.id,
+          userId: userId,
+          role: ProjectRole.OWNER
+        }
+      });
+
+      return await tx.project.findUnique({
+        where: { id: project.id },
+        include: { members: true }
+      })
+    });
   }
 
 }
