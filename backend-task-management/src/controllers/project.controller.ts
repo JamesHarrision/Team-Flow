@@ -101,7 +101,7 @@ export class ProjectController {
       );
 
       if(deletedProject.count === 0) {
-        return res.status(404/403).json({
+        return res.status(403).json({
           message: "Project not found or permission required"
         })
       }
