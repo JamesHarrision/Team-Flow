@@ -91,6 +91,10 @@ export class WorkspaceController {
     const { id } = req.params;
     const { name, description } = req.body;
 
+    if (!name && !description) {
+      return res.status(400).json("Nothing to update");
+    }
+
     try {
       const workspace = await this.workspaceRepo.getWorkspaceById(id as string);
       if (!workspace) {
