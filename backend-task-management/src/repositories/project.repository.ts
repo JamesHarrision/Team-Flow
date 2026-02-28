@@ -62,4 +62,20 @@ export class ProjectRepo {
     });
   }
 
+  public deleteProjectById = async (
+    workspaceId: string,
+    userId: string,
+    projectId: string) => {
+    return await prisma.project.deleteMany({
+      where: {
+        id: projectId,
+        workspaceId: workspaceId,
+        OR: [
+          {workspace: {ownerId: userId}},
+          {members: {some: {userId: userId, role: ProjectRole.OWNER}}}
+        ]
+      }
+    })
+  }
+
 }

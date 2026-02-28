@@ -22,7 +22,7 @@ export class ProjectController {
 
       const workspace = await this.workspaceRepo.getWorkspaceById(workspaceId as string);
       if (!workspace) {
-        return res.status(404).json({
+        return res.status(403).json({
           message: "Workspace not found or wrong workspace id"
         })
       }
@@ -81,6 +81,37 @@ export class ProjectController {
       return res.status(500).json({
         message: "Internal server error"
       })
+    }
+  }
+
+  public deleteProject = async (req: AuthRequest, res: Response) => {
+    try {
+
+      const { workspaceId, projectId } = req.params;
+      const userId = req.user!.userId;
+
+      if (!workspaceId || !projectId) {
+        return res.status(400).json({message: "Workspace id and Project id are required"});
+      }
+
+      const deletedProject = await this.projectRepo.deleteProjectById(
+        workspaceId as string,
+        userId as string,
+        projectId as string
+      );
+
+      if(deletedProject.count === 0) {
+        return res.status(404/403).json({
+          message: "Project not found or permission required"
+        })
+      }
+
+      return res.status(200).json({
+        message: "Project deleted successfully"
+      })
+    } catch (error) {
+      console.log("Delete project error", error);
+      return res.status(500).json("Internal server error");
     }
   }
 }

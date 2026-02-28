@@ -8,5 +8,6 @@ const projectController = new ProjectController();
 
 router.get("/", requireUser, projectController.getProjects);
 router.post("/", requireUser, projectController.createProject)
+router.delete("/:projectId", requireUser, projectController.deleteProject)
 
 export default router
