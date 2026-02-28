@@ -14,21 +14,14 @@ export class WorkspaceController {
         message: "Name are required"
       })
     }
-
-    const user = req?.user || undefined;
-
-    if (!user) {
-      return res.status(401).json({
-        message: "Unauthorized"
-      })
-    }
+    const userId = req.user!.userId;
 
     try {
       const workspace = await this.workspaceRepo.createWorkspace(
         {
           name,
           description,
-          ownerId: user.userId
+          ownerId: userId
         }
       )
 
@@ -46,13 +39,7 @@ export class WorkspaceController {
   }
 
   public getWorkspaces = async (req: AuthRequest, res: Response) => {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({
-        message: "Unauthorized"
-      })
-    }
-    const userId = user.userId;
+    const userId = req.user!.userId;
     try {
       const workspaces = await this.workspaceRepo.getWorkspacesByUserId(userId);
       return res.status(200).json({
@@ -71,14 +58,6 @@ export class WorkspaceController {
 
   public getWorkspaceById = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
-
-    const user = req.user
-    if (!user) {
-      return res.status(401).json({
-        message: "Unauthorized"
-      })
-    }
-
     try {
       const workspace = await this.workspaceRepo.getWorkspaceById(id as string);
 
