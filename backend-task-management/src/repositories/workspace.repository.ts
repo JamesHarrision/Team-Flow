@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma'
 import { Prisma, Workspace } from '@prisma/client'
+import { Project, ProjectMember } from '@prisma/client'
 
 export class WorkspaceRepo {
 
@@ -14,12 +15,35 @@ export class WorkspaceRepo {
   public getWorkspacesByUserId = async (userId: string) => {
     return await prisma.workspace.findMany({
       where: {
-        ownerId: userId
+        OR: [
+          {
+            ownerId: userId
+          },
+          {
+            projects: {
+              some: {
+                members: {
+                  some: {
+                    userId: userId
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        ownerId: true,
+        createdAt: true,
+        updatedAt: true,
         projects: true
       },
-      orderBy: { createdAt: "desc" }
+      orderBy: {
+        createdAt: "desc"
+      }
     })
   }
 
