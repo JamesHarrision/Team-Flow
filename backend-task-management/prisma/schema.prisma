@@ -10,6 +10,7 @@ datasource db {
 // Service: Task Management Service
 enum ProjectRole {
   OWNER
+  PM
   MEMBER
   VIEWER
 }
