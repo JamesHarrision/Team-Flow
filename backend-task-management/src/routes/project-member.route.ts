@@ -7,5 +7,6 @@ const projectMemberController = new ProjectMemberController();
 
 router.get("/", requireUser, projectMemberController.getProjectMembers);
 router.post("/", requireUser, projectMemberController.inviteNewUser);
+router.put("/:userId", requireUser, projectMemberController.changeRoleForUserById);
 
 export default router;
